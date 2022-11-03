@@ -7,6 +7,8 @@ import MeCab
 import unidic
 import tqdm
 import os
+import re
+import datetime
 
 def cleanLine(line):
     tmp = copy.copy(line)
@@ -17,6 +19,13 @@ def parseLine(line, num):
     parse = {}
     parse["num"] = num
     tagger = MeCab.Tagger()
+    tags = re.findall('\[.{1,5}\]', line)
+    parse["tag"] = tags
+    
+    for tag in tags:
+#        print(line, tag, tags)
+        line = line.replace(tag, " replace")
+#        print(line)
     if "保存日時:" in line:
         date = datalist[1].split("保存日時")[-1][1:-1]
         date_f = datetime.datetime.strptime(date, '%Y/%m/%d %H:%M')
@@ -51,6 +60,38 @@ def wordCount(cleanData):
                     countDict[word] = 1
     return countDict
     
+def wordSelect(cleanData, morp):
+    countDict = {}
+    for parse in cleanData:
+        if "Msentence" in parse.keys():
+            Msentence = parse["Msentence"]
+#            print(Msentence)
+#            tags = re.finditer('\[.*\]', Msentence)
+#            for tag in tags:
+#                Msentence.replace(tag, " ")
+                
+            
+            Wakati = Msentence.split("\n")
+            for wakati in Wakati:
+#                print(wakati)
+#                if re.search('\[.*\]', wakati):
+#                    print(wakati)
+#                    continue
+                    
+                if wakati == "EOS":
+                    break                
+                word = wakati.split("\t")[0]
+                wakati_morp = wakati.split("\t")[1].split(",")[0]
+                
+
+                if wakati_morp == morp:
+                    if word in countDict.keys():
+                        countDict[word] += 1
+                    else:
+                        countDict[word] = 1
+    return countDict
+
+           
 
 txt = "data/line_utf-8.txt"
 # data = np.loadtxt(txt, encoding="utf-8",dtype="str" ,delimiter='\n')
@@ -65,7 +106,10 @@ if not os.path.exists(datapath):
     #    print(line)
         parse = parseLine(line, num)
         cleanData.append(parse)
+    np.save("cleanData.npy", cleanData)
+        
 else:
     cleanData = np.load(datapath)
 countDict = wordCount(cleanData)
-    
+countDict_meishi = wordSelect(cleanData, "名詞")
+sorted_dict = sorted(countDict_meishi.items(), key = lambda item: item[1])
