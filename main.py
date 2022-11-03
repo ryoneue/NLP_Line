@@ -6,6 +6,7 @@ import copy
 import MeCab
 import unidic
 import tqdm
+import os
 
 def cleanLine(line):
     tmp = copy.copy(line)
@@ -53,14 +54,18 @@ def wordCount(cleanData):
 
 txt = "data/line_utf-8.txt"
 # data = np.loadtxt(txt, encoding="utf-8",dtype="str" ,delimiter='\n')
-with open(txt,encoding=("utf-8")) as f:
-    datalist = f.readlines()
-    
-cleanData = []
-for num, line in tqdm.tqdm(enumerate(datalist), total=len(datalist)):
-    line = cleanLine(line)
-#    print(line)
-    parse = parseLine(line, num)
-    cleanData.append(parse)
+datapath = "cleanData.npy"
+if not os.path.exists(datapath):
+    with open(txt,encoding=("utf-8")) as f:
+        datalist = f.readlines()
+        
+    cleanData = []
+    for num, line in tqdm.tqdm(enumerate(datalist), total=len(datalist)):
+        line = cleanLine(line)
+    #    print(line)
+        parse = parseLine(line, num)
+        cleanData.append(parse)
+else:
+    cleanData = np.load(datapath)
 countDict = wordCount(cleanData)
     
