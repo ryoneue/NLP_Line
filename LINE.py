@@ -22,6 +22,8 @@ class LINE:
 
     def loadData(self):
         txt = "data/line_utf-8.txt"
+        if not os.path.exists(txt): txt = "data/sample.txt"
+        
         if not os.path.exists(self.datapath):
             with open(txt,encoding=("utf-8")) as f:
                 datalist = f.readlines()
