@@ -22,7 +22,7 @@ jobs:
       - name: Upgrade pip
         run: pip install --upgrade pip
       - name: Install MeCab
-        run: pip install MeCab, unidic
+        run: pip install mecab-python3, unidic
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run Python
