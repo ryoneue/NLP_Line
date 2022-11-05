@@ -33,6 +33,7 @@ class LINE:
             # cleanData = []
             for num, line in tqdm.tqdm(enumerate(datalist), total=len(datalist)):
                 line = self.cleanLine(line)
+
             #    print(line)
                 parse = self.parseLine(line, num)
                 self.cleanData.append(parse)
@@ -73,7 +74,7 @@ class LINE:
             time, name, sentence = line.split("\t")
             parse["time"] = time
             parse["name"] = name
-            parse["sentence"] = sentence
+            parse["sentence"] = sentence[1:] # 文面の先頭のダブルクオーテーションを削除
             
             parse["Msentence"] = tagger.parse(sentence)
             
@@ -99,6 +100,48 @@ class LINE:
     
         
     def wordSelect(self, morp):
+        countDict = {}
+        for cdata in self.cleanData:
+            if "Msentence" in cdata.keys():
+                Msentence = cdata["Msentence"]
+                sentence = cdata["sentence"]
+
+                
+    #            print(Msentence)
+    #            tags = re.finditer('\[.*\]', Msentence)
+    #            for tag in tags:
+    #                Msentence.replace(tag, " ")
+                    
+                name = cdata["name"]
+                Wakati = Msentence.split("\n")
+                for wakati in Wakati:
+    #                print(wakati)
+    #                if re.search('\[.*\]', wakati):
+    #                    print(wakati)
+    #                    continue
+                        
+                    if wakati == "EOS":
+                        break                
+                    word = wakati.split("\t")[0]
+                    morp_info = wakati.split("\t")[1]
+                    word_class = morp_info.split(",")[0]
+                    
+                    if "ー" == word:
+                        print(Wakati)
+
+                    if word_class == morp:
+                        if word in countDict.keys() :
+                            countDict[word]["num"] += 1
+                            countDict[word]["morp"].append(morp_info)
+                            countDict[word]["name"].append(name)
+                        else:                    
+                            data_info = {"morp": [], "name": [], "num":1}
+                            countDict[word] = data_info
+                            countDict[word]["morp"].append(morp_info)
+                            countDict[word]["name"].append(name)
+        return countDict
+
+    def Select(self, morp, user=False):
         countDict = {}
         for cdata in self.cleanData:
             if "Msentence" in cdata.keys():
