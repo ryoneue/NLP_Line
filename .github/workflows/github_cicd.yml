@@ -1,0 +1,29 @@
+name: Action Sample
+
+on:
+  push:
+    branches: 
+      - master
+      - develop
+  pull_request:  
+    types: [opened]  
+  workflow_dispatch:
+
+jobs:
+  run-sampleData-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+          architecture: 'x64'
+      - name: Get Python version
+        run: python -V
+      - name: Install MeCab
+        run: sudo apt install mecab mecab-ipadic-utf8 libmecab-dev swig
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run Python
+        run: python main.py
