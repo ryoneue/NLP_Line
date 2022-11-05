@@ -13,4 +13,5 @@ LineData = LINE(datapath,debug=debug)
 
 countDict = LineData.wordCount()
 countDict_meishi = LineData.wordSelect("名詞")
-sorted_dict = sorted(countDict_meishi.items(), key = lambda item: item[1])
+sorted_dict = sorted(countDict_meishi.items(), key = lambda item: item[1]["num"])
+print("Complete Data prosesing.")

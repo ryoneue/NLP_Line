@@ -122,12 +122,16 @@ class LINE:
                     if wakati == "EOS":
                         break                
                     word = wakati.split("\t")[0]
-                    wakati_morp = wakati.split("\t")[1].split(",")[0]
+                    morp_info = wakati.split("\t")[1]
+                    word_class = morp_info.split(",")[0]
                     
-    
-                    if wakati_morp == morp:
-                        if word in countDict.keys():
-                            countDict[word] += 1
-                        else:
-                            countDict[word] = 1
+
+                    if word_class == morp:
+                        if word in countDict.keys() :
+                            countDict[word]["num"] += 1
+                            countDict[word]["morp"].append(morp_info)
+                        else:                    
+                            data_info = {"morp": [], "num":1}
+                            countDict[word] = data_info
+                            countDict[word]["morp"].append(morp_info)
         return countDict
