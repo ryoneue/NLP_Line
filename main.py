@@ -5,7 +5,8 @@ txt = "data/line_utf-8.txt"
 # data = np.loadtxt(txt, encoding="utf-8",dtype="str" ,delimiter='\n')
 datapath = "cleanData.npy"
 
-LineData = LINE(datapath)
+debug = True
+LineData = LINE(datapath,debug=debug)
 
 
     

@@ -12,11 +12,13 @@ import datetime
 tagger = MeCab.Tagger()
 class LINE:
 
-    def __init__(self, DataPath):
+    def __init__(self, DataPath, debug=False):
         self.cleanData=[]
         # self.parse = {}
         self.datapath = DataPath
+        self.debug = debug
         self.loadData()
+        
         # self.mecab = MeCab.Tagger()
         # self.countDict = 
 
@@ -24,7 +26,7 @@ class LINE:
         txt = "data/line_utf-8.txt"
         if not os.path.exists(txt): txt = "data/sample.txt"
         
-        if not os.path.exists(self.datapath):
+        if not os.path.exists(self.datapath) or self.debug:
             with open(txt,encoding=("utf-8")) as f:
                 datalist = f.readlines()
                 
@@ -41,6 +43,9 @@ class LINE:
 
     def cleanLine(self, line):
         tmp = copy.copy(line)
+        if "☎" in tmp:
+            tmp = "[通話]"
+
         tmp = tmp.replace("\n", "")
         return tmp
     
@@ -60,11 +65,11 @@ class LINE:
             # date_f = datetime.datetime.strptime(date, '%Y/%m/%d %H:%M')
             # self.parse["date"] = date_f
     
-        if "[LINE]" in line:
-            print("LINE")
+        # if "[LINE]" in line:
+        #     print("LINE")
             
             
-        elif  len(line.split("\t")) == 3:        
+        if  len(line.split("\t")) == 3:        
             time, name, sentence = line.split("\t")
             parse["time"] = time
             parse["name"] = name
@@ -90,6 +95,8 @@ class LINE:
                     else:
                         countDict[word] = 1
         return countDict
+
+    
         
     def wordSelect(self, morp):
         countDict = {}
@@ -97,8 +104,7 @@ class LINE:
             if "Msentence" in cdata.keys():
                 Msentence = cdata["Msentence"]
                 sentence = cdata["sentence"]
-                if "☎" in sentence:
-                    continue
+
                 
     #            print(Msentence)
     #            tags = re.finditer('\[.*\]', Msentence)
