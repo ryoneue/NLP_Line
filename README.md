@@ -1,6 +1,15 @@
 # NLP_Line
 ## 概要
 IOS版LINEアプリで保存したトーク履歴解析用スクリプト（開発途中）
+現在開発済み
+
+
+![image](https://user-images.githubusercontent.com/24537884/200872920-c4b3f1db-5cfd-48cf-b0a4-2d8d9214bdd6.png)
+- ユーザ名ごとにワードカウント
+- CSV形式で出力
+
+
+
 
 ## 準備
 トーク履歴のtxtファイルをdataディレクトリ直下に格納（要utf8に変換）
