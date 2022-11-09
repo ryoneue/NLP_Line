@@ -179,7 +179,7 @@ class LINE:
     def count4dic(self, info, key, users=False):
         info_in = info[key]
         info_out = {}
-        if key == "name" and not users==False:
+        if key == "name":
             for user in users:
                 info_out[user] = 0
 
