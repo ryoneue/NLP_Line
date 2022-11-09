@@ -209,7 +209,8 @@ class LINE:
             morps = self.count4dic(info, "morp")
             # merge = names | morps
             merge = names
-            out_dic[word] = pd.Series(merge)
+            # out_dic[word] = pd.Series(merge)
+            out_dic[word] = merge
         return out_dic  
 
             

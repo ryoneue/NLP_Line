@@ -16,7 +16,9 @@ countDict = LineData.wordCount()
 countDict_meishi = LineData.wordSelect("名詞")
 Count4xlsx = LineData.Count(countDict_meishi)
 
-pd.DataFrame(Count4xlsx).to_csv("test.csv")
+df_out = pd.DataFrame(Count4xlsx).T
+df_out[df_out.keys()[:-1]].to_csv("test.csv") #keyにNanが混じるため暫定処置
+
 sorted_dict = sorted(countDict_meishi.items(), key = lambda item: item[1]["num"])
 
 print("Complete Data prosesing.")
