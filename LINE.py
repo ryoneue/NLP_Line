@@ -125,9 +125,6 @@ class LINE:
                     word = wakati.split("\t")[0]
                     morp_info = wakati.split("\t")[1]
                     word_class = morp_info.split(",")[0]
-                    
-                    if "ー" == word:
-                        print(Wakati)
 
                     if word_class == morp:
                         if word in countDict.keys() :
@@ -178,3 +175,42 @@ class LINE:
                             countDict[word] = data_info
                             countDict[word]["morp"].append(morp_info)
         return countDict
+
+    def count4dic(self, info, key, users=False):
+        info_in = info[key]
+        info_out = {}
+        if key == "name" and not users==False:
+            for user in users:
+                info_out[user] = 0
+
+        for n in np.unique(info_in):
+
+            #names[n] = 0
+            count = info_in.count(n)
+            info_out[n] = count
+        return info_out
+
+    def Count(self, countDict):
+        out_dic = {}
+        users = np.unique([i[1]["name"][0] for i in countDict.items()])[1:]
+        for word,info in countDict.items():
+            morp = info["morp"]
+            name = info["name"]
+            
+            # names = np.unique(name)
+            # for i,n in enumerate(names):
+            #     #names[n] = 0
+            #     count_name = name.count(n)
+            #     names[n] = count_name
+            if word == "こんばんは":
+                a = 1
+
+            names = self.count4dic(info, "name", users=users)
+            morps = self.count4dic(info, "morp")
+            # merge = names | morps
+            merge = names
+            out_dic[word] = pd.Series(merge)
+        return out_dic  
+
+            
+                
