@@ -25,5 +25,7 @@ jobs:
         run: sudo apt install mecab mecab-ipadic-utf8 libmecab-dev swig
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: Run Python
+      - name: Run main scripts
         run: python main.py
+      - name: Run develop scripts
+        run: python test_ginza.py        
