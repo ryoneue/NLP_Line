@@ -29,6 +29,8 @@ jobs:
       - name: Install develop dependencies
         run: pip install -r requirements_dev.txt        
       - name: Run main scripts
-        run: python main.py
-      - name: Run develop scripts
-        run: python test_ginza.py        
+        run: python main.py --model mecab
+      - name: Run Ginza mode scripts
+        run: python main.py --model nlp
+      # - name: Run develop scripts
+      #   run: python test_ginza.py        
