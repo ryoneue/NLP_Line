@@ -1,0 +1,5 @@
+.venv/
+.vscode/
+cleanData*
+*.csv
+__pycache__/
