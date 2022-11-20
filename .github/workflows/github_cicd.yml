@@ -5,6 +5,7 @@ on:
     branches: 
       - master
       - develop
+      - '**'        # matches every branch
   pull_request:  
     types: [opened]  
   workflow_dispatch:
@@ -25,5 +26,11 @@ jobs:
         run: sudo apt install mecab mecab-ipadic-utf8 libmecab-dev swig
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: Run Python
-        run: python main.py
+      - name: Install develop dependencies
+        run: pip install -r requirements_dev.txt        
+      - name: Run main scripts
+        run: python main.py --model mecab
+      - name: Run Ginza mode scripts
+        run: python main.py --model nlp
+      # - name: Run develop scripts
+      #   run: python test_ginza.py        

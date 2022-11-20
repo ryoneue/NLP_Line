@@ -1,18 +1,26 @@
 from LINE import LINE
 import pandas as pd
-import numpy as np          
+import numpy as np       
+import argparse   
+
+parser = argparse.ArgumentParser(description='Parameter for NLP prossess.')
+parser.add_argument('--model', default="nlp", type=str,
+                    help='mecab or ginza')
+
+args = parser.parse_args()
+mode = args.model
 
 txt = "data/line_utf-8.txt"
 # data = np.loadtxt(txt, encoding="utf-8",dtype="str" ,delimiter='\n')
 datapath = "cleanData.npy"
 
 debug = True
-LineData = LINE(datapath,debug=debug)
+LineData = LINE(datapath,debug=debug, mode=mode)
 
 
     
 
-countDict = LineData.wordCount()
+# countDict = LineData.wordCount()
 countDict_meishi = LineData.wordSelect("名詞")
 Count4xlsx = LineData.Count(countDict_meishi)
 
