@@ -3,44 +3,57 @@ import numpy as np
 import pandas as pd
 import glob
 import copy
-import MeCab
-import unidic
+# import MeCab
+# import unidic
 import tqdm
 import os
 import re
 import datetime
-tagger = MeCab.Tagger()
+
+
+# tagger = MeCab.Tagger()
 class LINE:
 
-    def __init__(self, DataPath, debug=False):
+    def __init__(self, DataPath, debug=False, mode="mecab"):
         self.cleanData=[]
         # self.parse = {}
         self.datapath = DataPath
         self.debug = debug
+        self.mode = mode
+
+        if mode == "mecab":
+            import MeCab
+            import unidic
+            self.tagger = MeCab.Tagger()
+        elif mode == "nlp":
+            import spacy
+            self.tagger = spacy.load('ja_ginza')
+
         self.loadData()
         
+
         # self.mecab = MeCab.Tagger()
         # self.countDict = 
 
     def loadData(self):
         txt = "data/line_utf-8.txt"
-        if not os.path.exists(txt): txt = "data/sample.txt"
+        if not os.path.exists(txt) or self.debug:
+             txt = "data/sample.txt"
         
-        if not os.path.exists(self.datapath) or self.debug:
-            with open(txt,encoding=("utf-8")) as f:
-                datalist = f.readlines()
-                
-            # cleanData = []
-            for num, line in tqdm.tqdm(enumerate(datalist), total=len(datalist)):
-                line = self.cleanLine(line)
+        with open(txt,encoding=("utf-8")) as f:
+            datalist = f.readlines()
+            
+        # cleanData = []
+        for num, line in tqdm.tqdm(enumerate(datalist), total=len(datalist)):
+            line = self.cleanLine(line)
 
-            #    print(line)
-                parse = self.parseLine(line, num)
-                self.cleanData.append(parse)
-            np.save("cleanData.npy", self.cleanData)
+        #    print(line)
+            parse = self.parseLine(line, num)
+            self.cleanData.append(parse)
+        np.save("cleanData.npy", self.cleanData)
                 
-        else:
-            self.cleanData = np.load(self.datapath, allow_pickle=True)        
+        # else:
+        #     self.cleanData = np.load(self.datapath, allow_pickle=True)        
 
     def cleanLine(self, line):
         tmp = copy.copy(line)
@@ -76,7 +89,14 @@ class LINE:
             parse["name"] = name
             parse["sentence"] = sentence[1:] # 文面の先頭のダブルクオーテーションを削除
             
-            parse["Msentence"] = tagger.parse(sentence)
+            if self.mode == "mecab":
+                # parse["Msentence"] = self.tagger.parse(sentence)
+                parse["Msentence"] = [[i.split("\t")[0], i.split("\t")[1].split(",")[0]] for i in self.tagger.parse(sentence).split("\n") if "," in i]
+                
+            elif self.mode == "nlp":
+                # parse["Msentence"] = self.tagger(sentence)
+                parse["Msentence"] = [[i.orth_,i.tag_] for i in self.tagger(sentence)]
+            
             
         return parse
     
@@ -85,7 +105,16 @@ class LINE:
         for parse in self.cleanData:
             if "Msentence" in parse.keys():
                 Msentence = parse["Msentence"]
-                Wakati = Msentence.split("\n")
+                if self.mode == "mecab":
+                    Wakati = Msentence.split("\n")
+                if self.mode == "nlp":
+                    Wakati = []
+                    for sents in Msentence.sents:
+                        if sents.__len__() == 1:
+                            sents = [sents]
+                        for sent in sents:
+                            Wakati.append(str(sent))
+
                 for wakati in Wakati:
     #                print(wakati)
                     if wakati == "EOS":
@@ -99,7 +128,7 @@ class LINE:
 
     
         
-    def wordSelect(self, morp):
+    def wordSelect(self, morp, numLimit=2):
         countDict = {}
         for cdata in self.cleanData:
             if "Msentence" in cdata.keys():
@@ -113,20 +142,28 @@ class LINE:
     #                Msentence.replace(tag, " ")
                     
                 name = cdata["name"]
-                Wakati = Msentence.split("\n")
+                if self.mode == "mecab":
+                    Wakati = Msentence
+                if self.mode == "nlp":
+                    Wakati = Msentence
+                    # for sents in Msentence:
+                    #     if sents.__len__() == 1:
+                    #         sents = [sents]
+                    #     for sent in sents:
+                    #         Wakati.append(str(sent))
                 for wakati in Wakati:
     #                print(wakati)
     #                if re.search('\[.*\]', wakati):
     #                    print(wakati)
     #                    continue
                         
-                    if wakati == "EOS":
+                    if wakati[0] == "EOS":
                         break                
-                    word = wakati.split("\t")[0]
-                    morp_info = wakati.split("\t")[1]
-                    word_class = morp_info.split(",")[0]
+                    word = wakati[0]
+                    morp_info = wakati[1]
+                    word_class = wakati[1]
 
-                    if word_class == morp:
+                    if morp in word_class and len(word) >= numLimit:
                         if word in countDict.keys() :
                             countDict[word]["num"] += 1
                             countDict[word]["morp"].append(morp_info)
