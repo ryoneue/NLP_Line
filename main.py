@@ -14,14 +14,14 @@ txt = "data/line_utf-8.txt"
 # data = np.loadtxt(txt, encoding="utf-8",dtype="str" ,delimiter='\n')
 datapath = "cleanData.npy"
 
-debug = True
+debug = False
 LineData = LINE(datapath,debug=debug, mode=mode)
 
 
     
 
 # countDict = LineData.wordCount()
-countDict_meishi = LineData.wordSelect("名詞")
+countDict_meishi = LineData.wordSelect("名詞",numLimit=5)
 Count4xlsx = LineData.Count(countDict_meishi)
 
 df_out = pd.DataFrame(Count4xlsx).T

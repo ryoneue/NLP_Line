@@ -37,23 +37,23 @@ class LINE:
 
     def loadData(self):
         txt = "data/line_utf-8.txt"
-        if not os.path.exists(txt): txt = "data/sample.txt"
+        if not os.path.exists(txt) or self.debug:
+             txt = "data/sample.txt"
         
-        if not os.path.exists(self.datapath) or self.debug:
-            with open(txt,encoding=("utf-8")) as f:
-                datalist = f.readlines()
-                
-            # cleanData = []
-            for num, line in tqdm.tqdm(enumerate(datalist), total=len(datalist)):
-                line = self.cleanLine(line)
+        with open(txt,encoding=("utf-8")) as f:
+            datalist = f.readlines()
+            
+        # cleanData = []
+        for num, line in tqdm.tqdm(enumerate(datalist), total=len(datalist)):
+            line = self.cleanLine(line)
 
-            #    print(line)
-                parse = self.parseLine(line, num)
-                self.cleanData.append(parse)
-            np.save("cleanData.npy", self.cleanData)
+        #    print(line)
+            parse = self.parseLine(line, num)
+            self.cleanData.append(parse)
+        np.save("cleanData.npy", self.cleanData)
                 
-        else:
-            self.cleanData = np.load(self.datapath, allow_pickle=True)        
+        # else:
+        #     self.cleanData = np.load(self.datapath, allow_pickle=True)        
 
     def cleanLine(self, line):
         tmp = copy.copy(line)
@@ -128,7 +128,7 @@ class LINE:
 
     
         
-    def wordSelect(self, morp):
+    def wordSelect(self, morp, numLimit=2):
         countDict = {}
         for cdata in self.cleanData:
             if "Msentence" in cdata.keys():
@@ -163,7 +163,7 @@ class LINE:
                     morp_info = wakati[1]
                     word_class = wakati[1]
 
-                    if morp in word_class:
+                    if morp in word_class and len(word) >= numLimit:
                         if word in countDict.keys() :
                             countDict[word]["num"] += 1
                             countDict[word]["morp"].append(morp_info)

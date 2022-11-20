@@ -3,3 +3,4 @@
 cleanData*
 *.csv
 __pycache__/
+test.csv
