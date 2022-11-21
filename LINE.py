@@ -14,12 +14,13 @@ import datetime
 # tagger = MeCab.Tagger()
 class LINE:
 
-    def __init__(self, DataPath, debug=False, mode="mecab"):
+    def __init__(self, DataPath, txt, debug=False, mode="mecab"):
         self.cleanData=[]
         # self.parse = {}
         self.datapath = DataPath
         self.debug = debug
         self.mode = mode
+        self.txt = txt
 
         if mode == "mecab":
             import MeCab
@@ -29,16 +30,16 @@ class LINE:
             import spacy
             self.tagger = spacy.load('ja_ginza')
 
-        self.loadData()
+        self.loadData(txt)
         
 
         # self.mecab = MeCab.Tagger()
         # self.countDict = 
 
-    def loadData(self):
-        txt = "data/line_utf-8.txt"
-        if not os.path.exists(txt) or self.debug:
-             txt = "data/sample.txt"
+    def loadData(self, txt):
+        # txt = "data/line_utf-8.txt"
+        # if not os.path.exists(txt):
+            #  txt = "data/sample.txt"
         
         with open(txt,encoding=("utf-8")) as f:
             datalist = f.readlines()
@@ -59,6 +60,8 @@ class LINE:
         tmp = copy.copy(line)
         if "☎" in tmp:
             tmp = "[通話]"
+
+ 
 
         tmp = tmp.replace("\n", "")
         return tmp
@@ -89,7 +92,11 @@ class LINE:
             parse["name"] = name
             parse["sentence"] = sentence[1:] # 文面の先頭のダブルクオーテーションを削除
             
-            if self.mode == "mecab":
+            url_check = self.detectURL(sentence)
+
+            if url_check[0]:
+                parse["Msentence"] = [url_check[1]]
+            elif self.mode == "mecab":
                 # parse["Msentence"] = self.tagger.parse(sentence)
                 parse["Msentence"] = [[i.split("\t")[0], i.split("\t")[1].split(",")[0]] for i in self.tagger.parse(sentence).split("\n") if "," in i]
                 
@@ -100,6 +107,15 @@ class LINE:
             
         return parse
     
+    def detectURL(self,sentence):
+        check = False
+        Msentense = []
+        if "http://" in sentence or "https://" in sentence:
+            check = True
+            Msentense = [sentence, "URL"]
+        return check, Msentense
+
+
     def wordCount(self):
         countDict = {}
         for parse in self.cleanData:
@@ -142,10 +158,12 @@ class LINE:
     #                Msentence.replace(tag, " ")
                     
                 name = cdata["name"]
-                if self.mode == "mecab":
-                    Wakati = Msentence
-                if self.mode == "nlp":
-                    Wakati = Msentence
+                # if self.mode == "mecab":
+                #     Wakati = Msentence
+                # if self.mode == "nlp":
+                #     Wakati = Msentence
+                Wakati = Msentence
+                # print(Wakati)
                     # for sents in Msentence:
                     #     if sents.__len__() == 1:
                     #         sents = [sents]
@@ -161,9 +179,13 @@ class LINE:
                         break                
                     word = wakati[0]
                     morp_info = wakati[1]
-                    word_class = wakati[1]
 
-                    if morp in word_class and len(word) >= numLimit:
+                    word_class = wakati[1]
+                    if self.mode == "nlp":
+                        word_class = morp_info.split("-")[0]
+                    # print(word_class,word)
+                    if word_class in morp and len(word) >= numLimit:
+
                         if word in countDict.keys() :
                             countDict[word]["num"] += 1
                             countDict[word]["morp"].append(morp_info)
