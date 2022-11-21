@@ -20,7 +20,7 @@ print("Prossesing file:" , txt)
 datapath = "cleanData.npy"
 
 debug = False
-LineData = LINE(datapath,debug=debug, mode=mode)
+LineData = LINE(datapath,txt=args.txt, debug=debug, mode=mode)
 
 
     

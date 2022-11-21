@@ -14,12 +14,13 @@ import datetime
 # tagger = MeCab.Tagger()
 class LINE:
 
-    def __init__(self, DataPath, debug=False, mode="mecab"):
+    def __init__(self, DataPath, txt, debug=False, mode="mecab"):
         self.cleanData=[]
         # self.parse = {}
         self.datapath = DataPath
         self.debug = debug
         self.mode = mode
+        self.txt = txt
 
         if mode == "mecab":
             import MeCab
@@ -29,16 +30,16 @@ class LINE:
             import spacy
             self.tagger = spacy.load('ja_ginza')
 
-        self.loadData()
+        self.loadData(txt)
         
 
         # self.mecab = MeCab.Tagger()
         # self.countDict = 
 
-    def loadData(self):
-        txt = "data/line_utf-8.txt"
-        if not os.path.exists(txt) or self.debug:
-             txt = "data/sample.txt"
+    def loadData(self, txt):
+        # txt = "data/line_utf-8.txt"
+        # if not os.path.exists(txt):
+            #  txt = "data/sample.txt"
         
         with open(txt,encoding=("utf-8")) as f:
             datalist = f.readlines()
