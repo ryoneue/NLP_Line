@@ -19,8 +19,9 @@ IOS版LINEアプリで保存したトーク履歴解析用スクリプト（開�
 ファイル名は"line-utf8.txt"
 ## 使い方
 ```
-$pip -r requirements.txt
-$python main.py
+$pip install -r requirements.txt
+$pip install -r requirements_dev.txt 
+$python main.py --txt data/sample.txt --model nlp
 ```
 
 ## 補足
