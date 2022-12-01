@@ -16,7 +16,7 @@ IOS版LINEアプリで保存したトーク履歴解析用スクリプト（開�
 
 ## 準備
 トーク履歴のtxtファイルをdataディレクトリ直下に格納（要utf8に変換）
-ファイル名は"line-utf8.txt"
+ファイル名はmain.pyの--txt 引数で指定
 ## 使い方
 ```
 $pip install -r requirements.txt
